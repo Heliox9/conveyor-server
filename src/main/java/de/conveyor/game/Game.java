@@ -1,28 +1,42 @@
 package de.conveyor.game;
 
+import de.conveyor.server.ClientThread;
+
+import java.net.Socket;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
  * Instance of a single game. Holds the players and controls the flow of game data.
  */
 public class Game {
-    private Player player1;
-    private Player player2;
+    static int totalGames;
+    int id;
+    HashMap<ClientThread, Character> players;
     //TODO hold game state
 
     //TODO functionality
 
     public Game() {
-        // REMOVE Test constructor with basic player generation
-        player1 = new Player(new Character());
-        player2 = new Player(new Character());
+        id = totalGames;
+        totalGames++;
+        players = new HashMap<>();
     }
 
-    public Player getPlayer(UUID uuid) {
-        if (player1.getUuid().equals(uuid)) return player1;
-        if (player2.getUuid().equals(uuid)) return player2;
-        System.out.println("No player with UUID " + uuid + " found");
-        return null;
+
+    public boolean addClient(Socket socket) {
+        if (players.size() > 2) {
+            System.out.println("Player limit for game already reached!!");
+            return false;
+        }
+        ClientThread client = new ClientThread(socket);
+        client.start();
+        players.put(client, new Character());
+        return true;
+    }
+
+    public boolean isFull() {
+        return players.size() == 2;
     }
 
 }

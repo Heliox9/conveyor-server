@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 application {
-    mainClass = 'Main'
+    mainClass = 'de.conveyor.server.Main'
 }
 
 group = 'de.conveyor'
