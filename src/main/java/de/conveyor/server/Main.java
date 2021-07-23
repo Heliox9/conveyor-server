@@ -10,11 +10,11 @@ import java.util.ArrayList;
 public class Main {
 
     static ServerSocket serverSocket;
-    static ArrayList<Game> games;// TODO not sure if games need to be kept in this way
+//    static ArrayList<Game> games;// TODO not sure if games need to be kept in this way
 
     public static void main(String[] args) throws IOException {
         // create wrapper objects
-        games = new ArrayList<>();
+//        games = new ArrayList<>();
         Socket client;
         Game game = new Game();
 
@@ -35,8 +35,8 @@ public class Main {
 
             // check if game is full and create new
             if (game.isFull()) {
-                games.add(game);
-                System.out.println(games);
+//                games.add(game);
+//                System.out.println(games);
                 game = new Game();
                 System.out.println("Creating new game");
             }

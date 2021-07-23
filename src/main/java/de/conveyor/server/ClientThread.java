@@ -14,21 +14,18 @@ import java.util.Stack;
 
 public class ClientThread extends Thread {
 
+
     Socket client;
-    Stack<String> incoming = new Stack<>();
 
     public ClientThread(Socket client) {
         System.out.println("Client thread creating");
         this.client = client;
     }
 
-    public int getMessageBufferSize() {
-        return incoming.size();
+    public boolean isConnected() {
+        return client.isConnected();
     }
 
-    public String getNextIncoming() throws EmptyStackException {
-        return incoming.pop();
-    }
 
     // TODO get functions with from json building
 
@@ -36,33 +33,27 @@ public class ClientThread extends Thread {
 
     private BufferedReader in = null;
     private PrintWriter out = null;
-    private Gson gson = new Gson();
 
-    public PrintWriter getOut() {
-        return out;
+    public String read() throws IOException {
+        return in.readLine();
     }
+
+    public void write(String msg) {
+        out.println(msg);
+    }
+
 
     @Override
     public void run() {
-
         try {
             out = new PrintWriter(client.getOutputStream(), true);
-
             in = new BufferedReader(
                     new InputStreamReader(client.getInputStream()));
-
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                incoming.push(inputLine);
-                //TODO check message handling
-                System.out.println(toString());
-            }
-
-            in.close();
-            out.close();
-            client.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        while (true) {
+            //Dummy
         }
     }
 
@@ -70,7 +61,6 @@ public class ClientThread extends Thread {
     public String toString() {
         return "ClientThread{" +
                 "client=" + client +
-                ", incoming=" + incoming +
                 '}';
     }
 }

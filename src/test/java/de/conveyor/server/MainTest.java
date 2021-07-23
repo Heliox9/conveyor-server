@@ -13,42 +13,51 @@ import java.nio.Buffer;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
-    Gson gson = new Gson();
 
     @Test
     public void givenClient1_whenServerResponds_thenCorrect() throws IOException {
-        Socket client1 = new Socket("127.0.0.1", 88);
-        PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
-        out.println("hello");
-//        String back1 = in.readLine();
-//        System.out.println(gson.fromJson(back1, SampleObject.class));
-        out.println("1");
-//        String back2 = in.readLine();
-//        System.out.println(gson.fromJson(back2, SampleObject.class));
+        Thread t = new Thread(() -> {
+            Socket client1 = null;
+            try {
+                client1 = new Socket("127.0.0.1", 88);
 
-        out.println(".");
-//        assertEquals("C1hello", back1);
-//        assertEquals("C1world", back2);
+                PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
+                out.println("Test 1");
+                in.readLine();
+                in.readLine();
+                out.println("1");
 
-        // Notes: all responses need to be pulled. if not then it will just work throught the queue and therefore be old data
-    }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        t.start();
 
-    @Test
-    public void givenClient2_whenServerResponds_thenCorrect() throws IOException {
-        Socket client1 = new Socket("127.0.0.1", 88);
-        PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
-        out.println("hello");
-//        String back1 = in.readLine();
-//        System.out.println(gson.fromJson(back1, SampleObject.class));
-        out.println("2.5");
-//        String back2 = in.readLine();
-//        System.out.println(gson.fromJson(back2, SampleObject.class));
-        out.println(".");
-//        assertEquals("C2hello", back1);
-//        assertEquals("C2world", back2);
 
+        Socket client1 = null;
+        try {
+            client1 = new Socket("127.0.0.1", 88);
+
+            PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
+
+            // Enter Player name
+            out.println("Test 2");
+            System.out.println(in.readLine());
+            System.out.println(in.readLine());
+            out.println("2");
+
+            out.println(".");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
