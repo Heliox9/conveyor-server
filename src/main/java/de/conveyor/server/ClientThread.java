@@ -7,26 +7,45 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.EmptyStackException;
+import java.util.Queue;
+import java.util.Stack;
 
 
 public class ClientThread extends Thread {
 
     Socket client;
-
+    Stack<String> incoming = new Stack<>();
 
     public ClientThread(Socket client) {
         System.out.println("Client thread creating");
         this.client = client;
     }
 
+    public int getMessageBufferSize() {
+        return incoming.size();
+    }
+
+    public String getNextIncoming() throws EmptyStackException {
+        return incoming.pop();
+    }
+
+    // TODO get functions with from json building
+
+    // TODO allow sending messages. Is exposing the out writer enough?
+
+    private BufferedReader in = null;
+    private PrintWriter out = null;
+    private Gson gson = new Gson();
+
+    public PrintWriter getOut() {
+        return out;
+    }
 
     @Override
     public void run() {
-        try {
-            BufferedReader in = null;
-            PrintWriter out = null;
-            Gson gson = new Gson();
 
+        try {
             out = new PrintWriter(client.getOutputStream(), true);
 
             in = new BufferedReader(
@@ -34,8 +53,9 @@ public class ClientThread extends Thread {
 
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-
-                //TODO handle messages
+                incoming.push(inputLine);
+                //TODO check message handling
+                System.out.println(toString());
             }
 
             in.close();
@@ -50,6 +70,7 @@ public class ClientThread extends Thread {
     public String toString() {
         return "ClientThread{" +
                 "client=" + client +
+                ", incoming=" + incoming +
                 '}';
     }
 }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Main {
 
     static ServerSocket serverSocket;
-    static ArrayList<Game> games;
+    static ArrayList<Game> games;// TODO not sure if games need to be kept in this way
 
     public static void main(String[] args) throws IOException {
         // create wrapper objects
@@ -20,7 +20,7 @@ public class Main {
 
         // create server socket
         System.out.println("Server creating");
-        serverSocket = new ServerSocket(88);
+        serverSocket = new ServerSocket(88);// TODO change/ make configurable
 
         boolean up;
         // keep server up

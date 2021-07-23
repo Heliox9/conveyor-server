@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
 
+//TODO probably needs to be a thread in order to check the statues of Client queues and act accordingly
+
 /**
  * Instance of a single game. Holds the players and controls the flow of game data.
  */
