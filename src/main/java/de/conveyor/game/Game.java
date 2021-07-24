@@ -29,11 +29,20 @@ public class Game extends Thread {
                 e.printStackTrace();
             }
         });
+        // sending opponent name
         players.get(0).getThread().write("Opponent: " + players.get(1).getName());
         players.get(1).getThread().write("Opponent: " + players.get(0).getName());
 
-        while (players.get(0).getThread().isConnected() && players.get(1).getThread().isConnected()) {
+        // loop fight mechanics
+        while (true) { //check for game end
             // TODO iterative game state updates
+
+            //generate items
+            //send items to players
+            // receive buy and safe selection
+            // apply items to characters
+            // calculate fight
+            // send fight stats
         }
     }
 
