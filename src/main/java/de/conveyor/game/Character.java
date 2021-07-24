@@ -5,6 +5,18 @@ package de.conveyor.game;
  */
 public class Character {
     private int hp;
+    private Item helmet;
+    private Item gloves;
+    private Item armor;
+    private Item pants;
+    private Item shoes;
+    private Item special;
+    private Item weapon;
+    private Object propertiesKnown;//TODO find out what this is
+
+    public Character() {
+        hp = 100;
+    }
 
     public int getHp() {
         return hp;
@@ -20,10 +32,6 @@ public class Character {
 
     public Item getArmor() {
         return armor;
-    }
-
-    public Character() {
-        hp = 100;
     }
 
     public Item getPants() {
@@ -45,15 +53,6 @@ public class Character {
     public Object getPropertiesKnown() {
         return propertiesKnown;
     }
-
-    private Item helmet;
-    private Item gloves;
-    private Item armor;
-    private Item pants;
-    private Item shoes;
-    private Item special;
-    private Item weapon;
-    private Object propertiesKnown;//TODO find out what this is
 
     //TODO fill data
 }

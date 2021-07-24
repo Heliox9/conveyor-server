@@ -10,6 +10,7 @@ import java.util.Random;
  * each category has a rarity physical 1or2 | flash 3 | rest 2or3
  */
 public class Property {
+    private final int rarity;
     Element element;
     boolean typ;//false=>armor | true=> damage
     int stat;
@@ -30,6 +31,22 @@ public class Property {
     public Property(int rarity) {
         this(randomElementByRarity(rarity), randomTyp(), rarity);
         if (element == Element.FLASH) typ = true;//set flash to always be damage
+    }
+
+    /**
+     * generates Property with random stat based on the input
+     * for more information see function calculateStats()
+     *
+     * @param element Element of the property
+     * @param typ     typ of the property (true=damage | false=armor)
+     * @param rarity  rarity of the property (values 1-3)
+     */
+    public Property(Element element, boolean typ, int rarity) {
+        this.element = element;
+        this.typ = typ;
+        this.rarity = rarity;
+
+        calculateStats();
     }
 
     /**
@@ -59,24 +76,6 @@ public class Property {
      */
     private static boolean randomTyp() {
         return new Random().nextBoolean();
-    }
-
-    private final int rarity;
-
-    /**
-     * generates Property with random stat based on the input
-     * for more information see function calculateStats()
-     *
-     * @param element Element of the property
-     * @param typ     typ of the property (true=damage | false=armor)
-     * @param rarity  rarity of the property (values 1-3)
-     */
-    public Property(Element element, boolean typ, int rarity) {
-        this.element = element;
-        this.typ = typ;
-        this.rarity = rarity;
-
-        calculateStats();
     }
 
     /**

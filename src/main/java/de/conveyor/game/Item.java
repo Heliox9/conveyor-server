@@ -2,7 +2,6 @@ package de.conveyor.game;
 
 import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Model for a single item. Needs to match generation and types of app-implementation

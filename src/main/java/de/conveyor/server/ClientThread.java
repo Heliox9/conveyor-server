@@ -1,21 +1,23 @@
 package de.conveyor.server;
 
-import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.EmptyStackException;
-import java.util.Queue;
-import java.util.Stack;
 
 
 public class ClientThread extends Thread {
 
 
     Socket client;
+    private BufferedReader in = null;
+    private PrintWriter out = null;
+
+
+    // TODO get functions with from json building
+
+    // TODO allow sending messages. Is exposing the out writer enough?
 
     public ClientThread(Socket client) {
         System.out.println("Client thread creating");
@@ -25,14 +27,6 @@ public class ClientThread extends Thread {
     public boolean isConnected() {
         return client.isConnected();
     }
-
-
-    // TODO get functions with from json building
-
-    // TODO allow sending messages. Is exposing the out writer enough?
-
-    private BufferedReader in = null;
-    private PrintWriter out = null;
 
     public String read() throws IOException {
         return in.readLine();

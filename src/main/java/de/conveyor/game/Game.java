@@ -6,8 +6,6 @@ import de.conveyor.server.ClientThread;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 
 //TODO probably needs to be a thread in order to check the statues of Client queues and act accordingly
 
@@ -15,6 +13,18 @@ import java.util.UUID;
  * Instance of a single game. Holds the players and controls the flow of game data.
  */
 public class Game extends Thread {
+    static int totalGames;
+    int id;
+    ArrayList<Client> players;
+    public Game() {
+        id = totalGames;
+        totalGames++;
+        players = new ArrayList<>();
+    }
+    //TODO hold game state
+
+    //TODO functionality
+
     @Override
     public void run() {
         players.forEach((p) -> {
@@ -44,19 +54,6 @@ public class Game extends Thread {
             // calculate fight
             // send fight stats
         }
-    }
-
-    static int totalGames;
-    int id;
-    ArrayList<Client> players;
-    //TODO hold game state
-
-    //TODO functionality
-
-    public Game() {
-        id = totalGames;
-        totalGames++;
-        players = new ArrayList<>();
     }
 
     @Override

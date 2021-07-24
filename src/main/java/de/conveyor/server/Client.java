@@ -7,6 +7,16 @@ public class Client {
     private Character character;
     private String name;
 
+    public Client(ClientThread thread) {
+        this.thread = thread;
+        character = new Character();
+    }
+
+    public Client(ClientThread thread, Character character) {
+        this.thread = thread;
+        this.character = character;
+    }
+
     public String getName() {
         return name;
     }
@@ -21,15 +31,5 @@ public class Client {
 
     public Character getCharacter() {
         return character;
-    }
-
-    public Client(ClientThread thread) {
-        this.thread = thread;
-        character = new Character();
-    }
-
-    public Client(ClientThread thread, Character character) {
-        this.thread = thread;
-        this.character = character;
     }
 }
