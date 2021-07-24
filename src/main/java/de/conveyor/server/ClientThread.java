@@ -15,10 +15,6 @@ public class ClientThread extends Thread {
     private PrintWriter out = null;
 
 
-    // TODO get functions with from json building
-
-    // TODO allow sending messages. Is exposing the out writer enough?
-
     public ClientThread(Socket client) {
         System.out.println("Client thread creating");
         this.client = client;

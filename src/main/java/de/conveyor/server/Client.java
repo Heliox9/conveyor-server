@@ -32,4 +32,8 @@ public class Client {
     public Character getCharacter() {
         return character;
     }
+
+    public void setCharacter(Character character) {
+        this.character = character;
+    }
 }

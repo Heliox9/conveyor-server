@@ -10,7 +10,7 @@ public class Item {
     private int round;
     private int rarity;
     private int cost;
-    private ArrayList<Property> properties;//TODO find out what this is
+    private ArrayList<Property> properties;
     private ItemTyp itemTyp;
     private int range;
 
@@ -36,10 +36,30 @@ public class Item {
             e.printStackTrace();
         }
 
+        if (itemTyp == ItemTyp.WEAPON) {
+            range = (int) Math.round(Math.random() * 6);
+        }
+
         properties = new ArrayList<>();
         // TODO what happens for special of higher rarity
-        if (itemTyp == ItemTyp.SPECIAL && rarity == 1) ; // TODO Set some property
+        if (itemTyp == ItemTyp.SPECIAL && rarity == 1) properties.add(new Property()); // Set some property
         else generateStandard(); // generate none special item
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public ArrayList<Property> getProperties() {
+        return properties;
+    }
+
+    public ItemTyp getItemTyp() {
+        return itemTyp;
+    }
+
+    public int getRange() {
+        return range;
     }
 
     private void generateStandard() {

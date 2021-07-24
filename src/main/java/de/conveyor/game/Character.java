@@ -1,5 +1,8 @@
 package de.conveyor.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Data modeled after app-implementation
  */
@@ -12,10 +15,93 @@ public class Character {
     private Item shoes;
     private Item special;
     private Item weapon;
-    private Object propertiesKnown;//TODO find out what this is
+    //    private Object propertiesKnown;//TODO find out what this is
+    private ArrayList<Item> saved;
 
     public Character() {
         hp = 100;
+    }
+
+    public ArrayList<Item> getSaved() {
+        return saved;
+    }
+
+    public void setSaved(ArrayList<Item> saved) {
+        this.saved = saved;
+    }
+
+    public void wipeSaved() {
+        saved = new ArrayList<>();
+    }
+
+    public void applyItems(List<Item> items) {
+        for (Item i : items) {
+            applyItem(i);
+        }
+    }
+
+    public void lowerHP(int change) {
+        hp -= change;
+    }
+
+    public ArrayList<Property> getArmorProperties() {
+        return getPropertiesByTyp(false);
+    }
+
+    public ArrayList<Property> getDamageProperties() {
+        return getPropertiesByTyp(true);
+    }
+
+    private ArrayList<Property> getPropertiesByTyp(boolean typ) {
+        ArrayList<Property> properties = new ArrayList<>();
+
+        properties.addAll(addIfFitting(helmet, typ));
+        properties.addAll(addIfFitting(gloves, typ));
+        properties.addAll(addIfFitting(armor, typ));
+        properties.addAll(addIfFitting(pants, typ));
+        properties.addAll(addIfFitting(shoes, typ));
+        properties.addAll(addIfFitting(special, typ));
+        properties.addAll(addIfFitting(weapon, typ));
+
+        return properties;
+    }
+
+    private ArrayList<Property> addIfFitting(Item item, boolean typ) {
+        ArrayList<Property> properties = new ArrayList<>();
+
+        item.getProperties().forEach(property -> {
+            if (property.typ == typ) properties.add(property);
+        });
+
+        return properties;
+    }
+
+    public void applyItem(Item item) {
+        switch (item.getItemTyp()) {
+            case SPECIAL:
+                special = item;
+                break;
+            case ARMOR:
+                armor = item;
+                break;
+            case PANTS:
+                pants = item;
+                break;
+            case SHOES:
+                shoes = item;
+                break;
+            case GLOVES:
+                gloves = item;
+                break;
+            case HELMET:
+                helmet = item;
+                break;
+            case WEAPON:
+                weapon = item;
+                break;
+            default:
+                System.out.println("Item doesnt mach any slot " + item);
+        }
     }
 
     public int getHp() {
@@ -50,9 +136,8 @@ public class Character {
         return weapon;
     }
 
-    public Object getPropertiesKnown() {
-        return propertiesKnown;
-    }
+//    public Object getPropertiesKnown() {
+//        return propertiesKnown;
+//    }
 
-    //TODO fill data
 }

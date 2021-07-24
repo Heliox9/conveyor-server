@@ -3,7 +3,7 @@ package de.conveyor.game;
 
 public enum ItemTyp {
     HELMET, GLOVES, ARMOR, PANTS, SHOES,
-    SPECIAL;
+    SPECIAL, WEAPON;
 
     /**
      * generates a random value from the ItemTyp enum
