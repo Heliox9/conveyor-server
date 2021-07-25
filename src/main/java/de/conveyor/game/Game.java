@@ -100,7 +100,7 @@ public class Game extends Thread {
             // calculate fight
             logger.info("calculating damage");
             calculateAllDamage(players);
-            // TODO send fight stats
+            // send fight stats
             players.forEach(player -> {
                         GameState state = new GameState(roundCounter, player.getCharacter(), players.get((players.indexOf(player) + 1) % 2).getCharacter());
                         player.getThread().write(gson.toJson(state));
@@ -114,7 +114,16 @@ public class Game extends Thread {
             roundCounter++;
         }
         logger.info("Game: " + id + " finished after " + roundCounter + " rounds\n" + toString());
-        // TODO finish gracefully
+        // finish gracefully
+
+        logger.info("disconnecting clients");
+        players.forEach(p -> {
+            try {
+                p.getThread().close();
+            } catch (IOException e) {
+                logger.warn("socket closing failed for player p\n", e);
+            }
+        });
     }
 
     private void calculateAllDamage(ArrayList<Client> players) {

@@ -12,6 +12,7 @@ import java.net.Socket;
 
 public class ClientThread extends Thread {
 
+    // TODO check message flow. logs from this class get written from the game thread...
 
     Socket client;
     private BufferedReader in = null;
@@ -38,6 +39,10 @@ public class ClientThread extends Thread {
     public void write(String msg) {
         logger.trace("outgoing" + msg);
         out.println(msg);
+    }
+
+    public void close() throws IOException {
+        client.close();
     }
 
 

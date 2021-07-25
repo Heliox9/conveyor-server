@@ -51,16 +51,21 @@ class MainTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            try {
+                client1.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
         t.start();
 
 
-        Socket client1 = null;
+        Socket client2 = null;
         try {
-            client1 = new Socket("127.0.0.1", 88);
+            client2 = new Socket("127.0.0.1", 88);
 
-            PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
+            PrintWriter out = new PrintWriter(client2.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(client2.getInputStream()));
 
             // Enter Player name
             out.println("Test 2");
@@ -97,6 +102,7 @@ class MainTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        client2.close();
 
         try {
             Thread.sleep(10000);
