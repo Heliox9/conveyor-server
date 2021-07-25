@@ -102,8 +102,6 @@ public class Character {
             case WEAPON:
                 weapon = item;
                 break;
-            default:
-                System.out.println("Item doesnt mach any slot " + item);
         }
     }
 

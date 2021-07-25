@@ -1,6 +1,8 @@
 package de.conveyor.server;
 
 import de.conveyor.game.Game;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -8,6 +10,7 @@ import java.net.Socket;
 
 public class Main {
 
+    private static Logger logger = LoggerFactory.getLogger(Main.class);
     static ServerSocket serverSocket;
 //    static ArrayList<Game> games;// TODO not sure if games need to be kept in this way
 
@@ -18,16 +21,16 @@ public class Main {
         Game game = new Game();
 
         // create server socket
-        System.out.println("Server creating");
+        logger.info("Server creating");
         serverSocket = new ServerSocket(88);// TODO change/ make configurable
 
         boolean up;
         // keep server up
         while (true) {
-            System.out.println("Waiting for client");
+            logger.debug("Waiting for client");
             // accept client and add to game
             client = serverSocket.accept();
-            System.out.println("Client accepted");
+            logger.info("Client accepted");
 
             up = game.addClient(client);
             if (!up) break;
@@ -35,9 +38,8 @@ public class Main {
             // check if game is full and create new
             if (game.isFull()) {
 //                games.add(game);
-//                System.out.println(games);
                 game = new Game();
-                System.out.println("Creating new game");
+                logger.info("Creating new game");
             }
         }
         // kills server if client fails to add to game

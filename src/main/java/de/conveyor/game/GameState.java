@@ -5,6 +5,12 @@ public class GameState {
     Character player;// the player the
     Character opponent;
 
+    public GameState(int roundNumber, Character player, Character opponent) {
+        this.roundNumber = roundNumber;
+        this.player = player;
+        this.opponent = opponent;
+    }
+
     public int getRoundNumber() {
         return roundNumber;
     }
@@ -24,11 +30,5 @@ public class GameState {
                 ", player=" + player +
                 ", opponent=" + opponent +
                 '}';
-    }
-
-    public GameState(int roundNumber, Character player, Character opponent) {
-        this.roundNumber = roundNumber;
-        this.player = player;
-        this.opponent = opponent;
     }
 }

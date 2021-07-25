@@ -40,9 +40,9 @@ public class Client {
     @Override
     public String toString() {
         return "Client{" +
-                "thread=" + thread +
+                "name='" + name + '\'' +
                 ", character=" + character +
-                ", name='" + name + '\'' +
+                ", thread=" + thread +
                 '}';
     }
 }

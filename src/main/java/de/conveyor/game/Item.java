@@ -77,9 +77,6 @@ public class Item {
             case 3:
                 cost = 25;
                 break;
-            default:
-                cost = -5;
-                System.out.println("Invalid rarity of " + rarity);
         }
 
         if (rarity == 3) {
@@ -152,10 +149,10 @@ public class Item {
     public String toString() {
         return "Item{" +
                 "rarity=" + rarity +
-                ", cost=" + cost +
-                ", properties=" + properties +
                 ", itemTyp=" + itemTyp +
+                ", cost=" + cost +
                 ", range=" + range +
+                ", properties=" + properties +
                 '}';
     }
 }
