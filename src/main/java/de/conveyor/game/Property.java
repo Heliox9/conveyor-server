@@ -119,11 +119,21 @@ public class Property {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Property{" +
+                "rarity=" + rarity +
+                ", element=" + element +
+                ", typ=" + typ +
+                ", stat=" + stat +
+                '}';
+    }
+
     public enum Element {
         PHYSICAL, EARTH, AIR, WATER, FIRE, FLASH;
 
         public static Element random() {
-            return Element.values()[(int) Math.round(Math.random() * Element.values().length)];
+            return Element.values()[(int) Math.round(Math.random() * (Element.values().length - 1))];
         }
     }
 }

@@ -147,4 +147,15 @@ public class Item {
         if (random <= chanceRareTwo) return 2;
         return 3;
     }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "rarity=" + rarity +
+                ", cost=" + cost +
+                ", properties=" + properties +
+                ", itemTyp=" + itemTyp +
+                ", range=" + range +
+                '}';
+    }
 }

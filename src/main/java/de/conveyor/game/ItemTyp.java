@@ -11,6 +11,6 @@ public enum ItemTyp {
      * @return random value
      */
     public static ItemTyp random() {
-        return ItemTyp.values()[(int) Math.round(Math.random() * ItemTyp.values().length)];
+        return ItemTyp.values()[(int) Math.round(Math.random() * (ItemTyp.values().length - 1))];
     }
 }

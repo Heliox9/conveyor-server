@@ -36,4 +36,13 @@ public class Client {
     public void setCharacter(Character character) {
         this.character = character;
     }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "thread=" + thread +
+                ", character=" + character +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

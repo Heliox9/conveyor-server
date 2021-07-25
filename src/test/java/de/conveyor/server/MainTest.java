@@ -1,5 +1,8 @@
 package de.conveyor.server;
 
+import com.google.gson.Gson;
+import de.conveyor.game.GameState;
+import de.conveyor.game.Item;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -7,8 +10,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 class MainTest {
+    Gson gson = new Gson();
 
     @Test
     public void givenClient1_whenServerResponds_thenCorrect() throws IOException {
@@ -20,10 +25,29 @@ class MainTest {
                 PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
                 out.println("Test 1");
-                in.readLine();
-                in.readLine();
-                out.println("1");
+                in.readLine();// game id
+                in.readLine();// opponent
 
+                GameState state = null;
+
+                do {// iterate rounds
+                    ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
+
+                    // generate selection
+                    ArrayList<Item> bought = new ArrayList<Item>();
+                    bought.add(selection.getSelection().get(0));
+                    ArrayList<Item> saved = new ArrayList<Item>();
+                    saved.add(selection.getSelection().get(1));
+                    selection.setBought(bought);
+                    selection.setSaved(saved);
+
+                    out.println(gson.toJson(selection));
+
+                    // read fight stats
+                    state = gson.fromJson(in.readLine(), GameState.class);// read Gamestate
+
+                    // end of round
+                } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -42,9 +66,29 @@ class MainTest {
             out.println("Test 2");
             System.out.println(in.readLine());
             System.out.println(in.readLine());
-            out.println("2");
+            System.out.println(in.readLine());// game id
+            System.out.println(in.readLine());// opponent
 
-            out.println(".");
+            GameState state = null;
+
+            do {// iterate rounds
+                ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
+
+                // generate selection
+                ArrayList<Item> bought = new ArrayList<Item>();
+                bought.add(selection.getSelection().get(0));
+                ArrayList<Item> saved = new ArrayList<Item>();
+                saved.add(selection.getSelection().get(1));
+                selection.setBought(bought);
+                selection.setSaved(saved);
+
+                out.println(gson.toJson(selection));
+
+                // read fight stats
+                state = gson.fromJson(in.readLine(), GameState.class);// read Gamestate
+
+                // end of round
+            } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);
         } catch (IOException e) {
             e.printStackTrace();
         }

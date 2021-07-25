@@ -20,6 +20,7 @@ public class Character {
 
     public Character() {
         hp = 100;
+        wipeSaved();
     }
 
     public ArrayList<Item> getSaved() {
@@ -134,6 +135,21 @@ public class Character {
 
     public Item getWeapon() {
         return weapon;
+    }
+
+    @Override
+    public String toString() {
+        return "Character{" +
+                "hp=" + hp +
+                ", helmet=" + helmet +
+                ", gloves=" + gloves +
+                ", armor=" + armor +
+                ", pants=" + pants +
+                ", shoes=" + shoes +
+                ", special=" + special +
+                ", weapon=" + weapon +
+                ", saved=" + saved +
+                '}';
     }
 
 //    public Object getPropertiesKnown() {

@@ -19,6 +19,7 @@ public class Game extends Thread {
     int id;
     ArrayList<Client> players;
     private int roundCounter = 1;
+
     public Game() {
         id = totalGames;
         totalGames++;
@@ -26,7 +27,17 @@ public class Game extends Thread {
     }
 
     @Override
+    public String toString() {
+        return "Game{" +
+                "id=" + id +
+                ", players=" + players +
+                ", roundCounter=" + roundCounter +
+                '}';
+    }
+
+    @Override
     public void run() {
+        System.out.println("executing game flow");
         players.forEach((p) -> {
             try {
                 // Reading names
@@ -42,13 +53,17 @@ public class Game extends Thread {
         // sending opponent name
         players.get(0).getThread().write("Opponent: " + players.get(1).getName());
         players.get(1).getThread().write("Opponent: " + players.get(0).getName());
+        System.out.println("sent and received names and game id");
 
         int numPossibleItems = 5;
 
         // loop fight mechanics
+        System.out.println("starting round loop");
         while (players.get(0).getCharacter().getHp() > 0 && players.get(1).getCharacter().getHp() > 0) { //check for game end
+            System.out.println("round: " + roundCounter);
 
             players.forEach((p) -> {
+                System.out.println("generating items for player " + p);
                 //generate items
                 ArrayList<Item> set = p.getCharacter().getSaved();
                 for (int i = 0; i < numPossibleItems - p.getCharacter().getSaved().size(); i++) {
@@ -57,7 +72,8 @@ public class Game extends Thread {
                 p.getCharacter().wipeSaved();
 
                 //send items to players
-                p.getThread().write(gson.toJson(set));
+                p.getThread().write(gson.toJson(new ItemSelection(set)));
+                System.out.println("sent items: " + set);
             });
 
             players.forEach(p -> {
@@ -67,6 +83,7 @@ public class Game extends Thread {
                     // apply items to characters
                     p.getCharacter().applyItems(selection.getBought());
                     p.getCharacter().setSaved(selection.getSaved());
+                    System.out.println("selection applied for player: \n" + selection + "\n" + p);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -75,10 +92,22 @@ public class Game extends Thread {
 
             });
             // calculate fight
+            System.out.println("calculating damage");
             calculateAllDamage(players);
             // TODO send fight stats
+            players.forEach(player -> {
+                        GameState state = new GameState(roundCounter, player.getCharacter(), players.get((players.indexOf(player) + 1) % 2).getCharacter());
+                        player.getThread().write(gson.toJson(state));
+                        System.out.println("sent state: " + state);
+                    }
+
+            );
+
+            //iterate round
+            System.out.println("round finished");
             roundCounter++;
         }
+        System.out.println("Game: " + id + " finished!\n" + toString());
         // TODO finish gracefully
     }
 
