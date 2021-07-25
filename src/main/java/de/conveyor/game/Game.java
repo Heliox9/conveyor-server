@@ -104,10 +104,10 @@ public class Game extends Thread {
             );
 
             //iterate round
-            System.out.println("round finished");
+            System.out.println("round finished: " + roundCounter);
             roundCounter++;
         }
-        System.out.println("Game: " + id + " finished!\n" + toString());
+        System.out.println("Game: " + id + " finished after " + roundCounter + " rounds\n" + toString());
         // TODO finish gracefully
     }
 

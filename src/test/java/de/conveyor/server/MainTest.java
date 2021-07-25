@@ -64,8 +64,6 @@ class MainTest {
 
             // Enter Player name
             out.println("Test 2");
-            System.out.println(in.readLine());
-            System.out.println(in.readLine());
             System.out.println(in.readLine());// game id
             System.out.println(in.readLine());// opponent
 
@@ -73,6 +71,8 @@ class MainTest {
 
             do {// iterate rounds
                 ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
+                System.out.println("received:");
+                System.out.println(selection);
 
                 // generate selection
                 ArrayList<Item> bought = new ArrayList<Item>();
@@ -83,12 +83,17 @@ class MainTest {
                 selection.setSaved(saved);
 
                 out.println(gson.toJson(selection));
+                System.out.println("sent:");
+                System.out.println(selection);
 
                 // read fight stats
                 state = gson.fromJson(in.readLine(), GameState.class);// read Gamestate
+                System.out.println("received:");
+                System.out.println(state);
 
                 // end of round
             } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);
+            System.out.println("execution finished");
         } catch (IOException e) {
             e.printStackTrace();
         }

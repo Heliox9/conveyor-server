@@ -70,9 +70,11 @@ public class Character {
     private ArrayList<Property> addIfFitting(Item item, boolean typ) {
         ArrayList<Property> properties = new ArrayList<>();
 
-        item.getProperties().forEach(property -> {
-            if (property.typ == typ) properties.add(property);
-        });
+        if (item != null) {
+            item.getProperties().forEach(property -> {
+                if (property.typ == typ) properties.add(property);
+            });
+        }
 
         return properties;
     }
