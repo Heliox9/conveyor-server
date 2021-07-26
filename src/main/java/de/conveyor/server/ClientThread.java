@@ -14,10 +14,10 @@ public class ClientThread extends Thread {
 
     // TODO check message flow. logs from this class get written from the game thread...
 
+    private final Logger logger;
     Socket client;
     private BufferedReader in = null;
     private PrintWriter out = null;
-    private final Logger logger;
 
 
     public ClientThread(Socket client) {

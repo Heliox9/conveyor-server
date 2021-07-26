@@ -1,12 +1,14 @@
 package de.conveyor.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Data modeled after app-implementation
  */
 public class Character {
+    private final ArrayList<Property> viewable;
     private int hp;
     private Item helmet;
     private Item gloves;
@@ -15,7 +17,6 @@ public class Character {
     private Item shoes;
     private Item special;
     private Item weapon;
-    private final ArrayList<Property> viewable;
     private ArrayList<Item> saved;
     private int money;
 
@@ -31,6 +32,7 @@ public class Character {
     }
 
     public int getRange() {
+        if (weapon == null) return 0;
         return weapon.getRange();
     }
 
@@ -60,7 +62,7 @@ public class Character {
     }
 
     public void lowerHP(int change) {
-        hp -= change;
+        if (change > 0) hp -= change;
     }
 
     public void destroySpecial() {
@@ -95,6 +97,8 @@ public class Character {
         items.add(shoes);
         items.add(special);
         items.add(weapon);
+
+        items.removeAll(Collections.singleton(null));
         return items;
     }
 

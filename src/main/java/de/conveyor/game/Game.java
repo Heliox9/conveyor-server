@@ -61,18 +61,22 @@ public class Game extends Thread {
 
         int numPossibleItems = 5;
 
+        boolean error = false;
         // loop fight mechanics
         logger.debug("starting round loop");
-        while (players.get(0).getCharacter().getHp() > 0 && players.get(1).getCharacter().getHp() > 0) { //check for game end
+        while (!error && players.get(0).getCharacter().getHp() > 0 && players.get(1).getCharacter().getHp() > 0) { //check for game end
             logger.info("round: " + roundCounter);
 
             players.forEach((p) -> {
                 logger.info("generating items for player " + p);
                 //generate items
-                ArrayList<Item> set = p.getCharacter().getSaved();
-                for (int i = 0; i < numPossibleItems - p.getCharacter().getSaved().size(); i++) {
+                ArrayList<Item> set = new ArrayList<>();
+                for (int i = 0; i < (numPossibleItems - p.getCharacter().getSaved().size()); i++) {
                     set.add(new Item(roundCounter));
                 }
+                logger.trace("num items generated: " + set.size());
+                set.addAll(p.getCharacter().getSaved());
+                logger.trace("num items total: " + set.size());
                 p.getCharacter().wipeSaved();
 
                 //send items to players
@@ -80,7 +84,7 @@ public class Game extends Thread {
                 logger.debug("sent items: " + set);
             });
 
-            players.forEach(p -> {
+            for (Client p : players) {
                 // receive buy and safe selection
                 try {
                     ItemSelection selection = gson.fromJson(p.getThread().read(), ItemSelection.class);
@@ -92,10 +96,12 @@ public class Game extends Thread {
                     logger.info("selection applied for player: \n" + selection + "\n" + p);
                 } catch (IOException e) {
                     logger.error("failed to send or receive from client", e);
+                    error = true;
+                    break;
                 }
 
 
-            });
+            }
             // calculate fight
             logger.info("calculating damage");
             calculateAllDamage(players);
@@ -123,7 +129,9 @@ public class Game extends Thread {
         // finish gracefully
 
         logger.info("disconnecting clients");
-        players.forEach(p -> {
+        players.forEach(p ->
+
+        {
             try {
                 p.getThread().close();
             } catch (IOException e) {
@@ -148,6 +156,9 @@ public class Game extends Thread {
 
         // iterate both attacks
         for (int i = 0; i < 2; i++) {
+            if (players.get(0).getCharacter() == players.get(1).getCharacter())
+                logger.error("CHARACTERS ARE THE SAME, WTF");
+
             // determine numbering for each round
             faster = (faster + i) % 2;
             slower = (slower + i) % 2;
@@ -166,10 +177,12 @@ public class Game extends Thread {
 
             // apply damage to player
             damaged = calculateDamage(defender, attacker);
-            players.get((slower + swapped) % 2).setCharacter(damaged);
 
             // skip second round if player died
-            if (damaged.getHp() <= 0) break;
+            if (damaged.getHp() <= 0) {
+                logger.info("skipping second attack because player died");
+                break;
+            }
         }
     }
 
@@ -216,7 +229,7 @@ public class Game extends Thread {
                     break;
                 }
             }
-            if (!exists) collapsed.add(i);
+            if (!exists) collapsed.add(i.clone());
         }
 
 

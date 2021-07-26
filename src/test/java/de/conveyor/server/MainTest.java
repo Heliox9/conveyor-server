@@ -35,7 +35,7 @@ class MainTest {
 
                     // generate selection
                     ArrayList<Item> bought = new ArrayList<Item>();
-                    bought.add(selection.getSelection().get(0));
+                    bought.add(selection.getSelection().get(3));
                     ArrayList<Item> saved = new ArrayList<Item>();
                     saved.add(selection.getSelection().get(1));
                     selection.setBought(bought);
@@ -81,7 +81,7 @@ class MainTest {
 
                 // generate selection
                 ArrayList<Item> bought = new ArrayList<Item>();
-                bought.add(selection.getSelection().get(0));
+                bought.add(selection.getSelection().get(4));
                 ArrayList<Item> saved = new ArrayList<Item>();
                 saved.add(selection.getSelection().get(1));
                 selection.setBought(bought);

@@ -15,6 +15,9 @@ public class Property {
     boolean typ;//false=>armor | true=> damage
     int stat;
 
+    public Property clone() {
+        return new Property(element, typ, rarity, stat);
+    }
 
     /**
      * generates a randomized property within the rarity
@@ -35,11 +38,15 @@ public class Property {
      * @param rarity  rarity of the property (values 1-3)
      */
     public Property(Element element, boolean typ, int rarity) {
+        this(element, typ, rarity, -42);
+        calculateStats();
+    }
+
+    public Property(Element element, boolean typ, int rarity, int stat) {
         this.element = element;
         this.typ = typ;
         this.rarity = rarity;
-
-        calculateStats();
+        this.stat = stat;
     }
 
     /**

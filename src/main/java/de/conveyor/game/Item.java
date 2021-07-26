@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class Item {
     private final int round;
     private final int rarity;
-    private int cost;
     private final ArrayList<Property> properties;
     private final ItemTyp itemTyp;
+    private int cost;
     private int range;
 
     /**
@@ -52,9 +52,9 @@ public class Item {
             } while ((range == 0 && rarity > 1) || (range == 2 && rarity == 3));
         }
         if (itemTyp == ItemTyp.SPECIAL && rarity == 1) properties.add(new Property(2)); // Set some property
-            // Rar1 potion: extra prop for 1 turn (rar 2 prop)
-            //  Rar2 Wand: 1 random item gets replaced with 1 tier higher / rerolled if slot empty or already rar3
-            // rar3 shield: reflects all dmg for 1 turn then breaks (attacker still blocks with his def items)
+            // Rar1 potion  : extra prop for 1 turn (rar 2 prop)
+            // Rar2 wand    : 1 random item gets replaced with 1 tier higher / rerolled if slot empty or already rar3
+            // Rar3 shield  : reflects all dmg for 1 turn then breaks (attacker still blocks with his def items)
         else generateStandard(); // generate none special item
     }
 
@@ -80,20 +80,15 @@ public class Item {
 
     private void generateStandard() {
         // calculate number of properties
-        int numProperties = (int) Math.round(Math.random() * (rarity == 1 ? 1 : 3)) + 1;//generate num between 1-4
+        int numProperties = (int) Math.round(Math.random() * 2) + (rarity == 1 ? 1 : 3);//generate num between 1-4
 
         //set cost based on rarity
-        switch (rarity) {
-            case 1:
-                cost = 5;
-                break;
-            case 2:
-                cost = 15;
-                break;
-            case 3:
-                cost = 25;
-                break;
-        }
+        cost = switch (rarity) {
+            case 1 -> 5;
+            case 2 -> 15;
+            case 3 -> 25;
+            default -> throw new IllegalStateException("Unexpected value: " + rarity);
+        };
 
         if (rarity == 3) {
             // generate flash property
