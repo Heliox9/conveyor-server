@@ -7,12 +7,13 @@ import java.util.ArrayList;
  * Model for a single item. Needs to match generation and types of app-implementation
  */
 public class Item {
-    private int round;
-    private int rarity;
+    private final int round;
+    private final int rarity;
     private int cost;
-    private ArrayList<Property> properties;
-    private ItemTyp itemTyp;
+    private final ArrayList<Property> properties;
+    private final ItemTyp itemTyp;
     private int range;
+
     /**
      * Fully random item generation
      */
@@ -27,7 +28,7 @@ public class Item {
     /**
      * Typ based item generation
      *
-     * @param itemTyp
+     * @param itemTyp the itemTyp to generate
      */
     public Item(int round, ItemTyp itemTyp, int rarity) {
         this.itemTyp = itemTyp;
@@ -39,6 +40,7 @@ public class Item {
                 e.printStackTrace();
             }
         }
+        this.rarity = rarity;
 
         properties = new ArrayList<>();
         if (itemTyp == ItemTyp.WEAPON) {
@@ -107,7 +109,7 @@ public class Item {
     }
 
     private int calculateRarityByRound() throws InvalidAttributeValueException {
-        int rarity = 0;
+        int rarity;
         switch (round) {
             case 1:
                 return 1;
@@ -144,9 +146,9 @@ public class Item {
     /**
      * Generates a random number and looks up where it lands in the three rarities
      *
-     * @param chanceRareOne
-     * @param chanceRareTwo
-     * @return
+     * @param chanceRareOne percentage for tier 1
+     * @param chanceRareTwo percentage for tier 2
+     * @return tier between 1-3
      */
     private int calculateRarity(double chanceRareOne, double chanceRareTwo) throws InvalidAttributeValueException {
         if (chanceRareTwo + chanceRareTwo > 1)

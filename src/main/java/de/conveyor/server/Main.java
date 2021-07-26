@@ -11,7 +11,7 @@ import java.net.Socket;
 public class Main {
 
     static ServerSocket serverSocket;
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 //    static ArrayList<Game> games;// TODO not sure if games need to be kept in this way
 
     public static void main(String[] args) throws IOException {

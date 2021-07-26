@@ -3,13 +3,12 @@ package de.conveyor.server;
 import de.conveyor.game.Character;
 
 public class Client {
-    private ClientThread thread;
+    private final ClientThread thread;
     private Character character;
     private String name;
 
     public Client(ClientThread thread) {
-        this.thread = thread;
-        character = new Character();
+        this(thread, new Character());
     }
 
     public Client(ClientThread thread, Character character) {

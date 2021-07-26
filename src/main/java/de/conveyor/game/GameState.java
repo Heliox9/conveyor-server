@@ -11,9 +11,6 @@ public class GameState {
         this.opponent = opponent;
     }
 
-    public int getRoundNumber() {
-        return roundNumber;
-    }
 
     public Character getPlayer() {
         return player;

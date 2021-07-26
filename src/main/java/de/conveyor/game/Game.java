@@ -107,6 +107,9 @@ public class Game extends Thread {
                         // destroy special items
                         logger.debug("destroying special: " + player.getCharacter().getSpecial());
                         player.getCharacter().destroySpecial();
+
+                        logger.debug("adding cash to player: " + player);
+                        player.getCharacter().addMoney(3);
                     }
 
             );
@@ -138,7 +141,7 @@ public class Game extends Thread {
 
         // determine first attacker
         int faster = 0;
-        if (players.get(1).getCharacter().getWeapon().getRange() > players.get(0).getCharacter().getWeapon().getRange())
+        if (players.get(1).getCharacter().getRange() > players.get(0).getCharacter().getRange())
             faster = 1;
         int slower = (faster + 1) % 2;
         Character damaged;

@@ -17,7 +17,7 @@ public class ClientThread extends Thread {
     Socket client;
     private BufferedReader in = null;
     private PrintWriter out = null;
-    private Logger logger;
+    private final Logger logger;
 
 
     public ClientThread(Socket client) {
@@ -55,9 +55,7 @@ public class ClientThread extends Thread {
         } catch (IOException e) {
             logger.warn("unable to register streams for socket", e);
         }
-        while (true) {
-            //Dummy
-        }
+
     }
 
     @Override

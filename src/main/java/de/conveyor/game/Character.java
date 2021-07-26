@@ -15,7 +15,7 @@ public class Character {
     private Item shoes;
     private Item special;
     private Item weapon;
-    private ArrayList<Property> viewable;
+    private final ArrayList<Property> viewable;
     private ArrayList<Item> saved;
     private int money;
 
@@ -168,7 +168,7 @@ public class Character {
      * @param item the item to pull properties from
      */
     private void addViewable(Item item) {
-        item.getProperties().forEach(property -> addViewable(property));
+        item.getProperties().forEach(this::addViewable);
     }
 
 
@@ -176,32 +176,8 @@ public class Character {
         return hp;
     }
 
-    public Item getHelmet() {
-        return helmet;
-    }
-
-    public Item getGloves() {
-        return gloves;
-    }
-
-    public Item getArmor() {
-        return armor;
-    }
-
-    public Item getPants() {
-        return pants;
-    }
-
-    public Item getShoes() {
-        return shoes;
-    }
-
     public Item getSpecial() {
         return special;
-    }
-
-    public Item getWeapon() {
-        return weapon;
     }
 
     @Override
@@ -219,8 +195,5 @@ public class Character {
                 '}';
     }
 
-//    public Object getPropertiesKnown() {
-//        return propertiesKnown;
-//    }
 
 }
