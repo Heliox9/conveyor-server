@@ -15,12 +15,23 @@ public class Character {
     private Item shoes;
     private Item special;
     private Item weapon;
-    //    private Object propertiesKnown;//TODO find out what this is
+    private ArrayList<Property> viewable;
     private ArrayList<Item> saved;
+    private int money;
 
     public Character() {
         hp = 100;
         wipeSaved();
+        viewable = new ArrayList<>();
+        money = 10;//TODO change to actual value
+    }
+
+    public void addMoney(int plus) {
+        money += plus;
+    }
+
+    public int getRange() {
+        return weapon.getRange();
     }
 
     public ArrayList<Item> getSaved() {
@@ -35,14 +46,25 @@ public class Character {
         saved = new ArrayList<>();
     }
 
-    public void applyItems(List<Item> items) {
+    public boolean applyItems(List<Item> items) {
+        int cost = 0;
         for (Item i : items) {
-            applyItem(i);
+            cost += i.getCost();
         }
+        if (cost < money) {
+            for (Item i : items) {
+                applyItem(i);
+            }
+            return true;
+        } else return false;
     }
 
     public void lowerHP(int change) {
         hp -= change;
+    }
+
+    public void destroySpecial() {
+        special = null;
     }
 
     public ArrayList<Property> getArmorProperties() {
@@ -56,15 +78,24 @@ public class Character {
     private ArrayList<Property> getPropertiesByTyp(boolean typ) {
         ArrayList<Property> properties = new ArrayList<>();
 
-        properties.addAll(addIfFitting(helmet, typ));
-        properties.addAll(addIfFitting(gloves, typ));
-        properties.addAll(addIfFitting(armor, typ));
-        properties.addAll(addIfFitting(pants, typ));
-        properties.addAll(addIfFitting(shoes, typ));
-        properties.addAll(addIfFitting(special, typ));
-        properties.addAll(addIfFitting(weapon, typ));
+        for (Item i : getAllItems()
+        ) {
+            properties.addAll(addIfFitting(i, typ));
+        }
 
         return properties;
+    }
+
+    private ArrayList<Item> getAllItems() {
+        ArrayList<Item> items = new ArrayList<>();
+        items.add(helmet);
+        items.add(gloves);
+        items.add(armor);
+        items.add(pants);
+        items.add(shoes);
+        items.add(special);
+        items.add(weapon);
+        return items;
     }
 
     private ArrayList<Property> addIfFitting(Item item, boolean typ) {
@@ -79,10 +110,21 @@ public class Character {
         return properties;
     }
 
+    private void upgradeItem() {
+        Item selected;
+        do {
+            selected = getAllItems().get((int) Math.round(Math.random() * (getAllItems().size() - 1)));
+        } while (selected.getRarity() == 3);
+
+        Item newItem = new Item(0, selected.getItemTyp(), selected.getRarity() + 1);
+        applyItem(newItem);
+    }
+
     public void applyItem(Item item) {
         switch (item.getItemTyp()) {
             case SPECIAL:
-                special = item;
+                if (item.getRarity() == 2) upgradeItem();
+                else special = item;
                 break;
             case ARMOR:
                 armor = item;
@@ -103,7 +145,32 @@ public class Character {
                 weapon = item;
                 break;
         }
+        addViewable(item);
     }
+
+    /**
+     * add single property to viewable list, only if its element and typ combination is unique
+     *
+     * @param prop the property to add
+     */
+    private void addViewable(Property prop) {
+        for (Property p : viewable
+        ) {
+            if (p.element == prop.element && p.typ == prop.typ) return;
+        }
+
+        viewable.add(prop);
+    }
+
+    /**
+     * add all unique properties of the item
+     *
+     * @param item the item to pull properties from
+     */
+    private void addViewable(Item item) {
+        item.getProperties().forEach(property -> addViewable(property));
+    }
+
 
     public int getHp() {
         return hp;

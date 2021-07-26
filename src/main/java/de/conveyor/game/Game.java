@@ -18,11 +18,10 @@ import java.util.ArrayList;
 public class Game extends Thread {
     static int totalGames;
     private final Gson gson = new Gson();
+    private final Logger logger;
     int id;
     ArrayList<Client> players;
     private int roundCounter = 1;
-
-    private Logger logger;
 
     public Game() {
         id = totalGames;
@@ -87,14 +86,14 @@ public class Game extends Thread {
                     ItemSelection selection = gson.fromJson(p.getThread().read(), ItemSelection.class);
                     logger.debug("received selection: \n" + selection);
                     // apply items to characters
-                    p.getCharacter().applyItems(selection.getBought());
+                    boolean canBuy = p.getCharacter().applyItems(selection.getBought());
+                    // TODO add possibility to decline buy
                     p.getCharacter().setSaved(selection.getSaved());
                     logger.info("selection applied for player: \n" + selection + "\n" + p);
                 } catch (IOException e) {
                     logger.error("failed to send or receive from client", e);
                 }
 
-                // TODO at some point maybe | calculate cash
 
             });
             // calculate fight
@@ -105,15 +104,19 @@ public class Game extends Thread {
                         GameState state = new GameState(roundCounter, player.getCharacter(), players.get((players.indexOf(player) + 1) % 2).getCharacter());
                         player.getThread().write(gson.toJson(state));
                         logger.debug("sent state: " + state);
+                        // destroy special items
+                        logger.debug("destroying special: " + player.getCharacter().getSpecial());
+                        player.getCharacter().destroySpecial();
                     }
 
             );
+
 
             //iterate round
             logger.info("round finished: " + roundCounter);
             roundCounter++;
         }
-        logger.info("Game: " + id + " finished after " + roundCounter + " rounds\n" + toString());
+        logger.info("Game: " + id + " finished after " + roundCounter + " rounds\n" + this);
         // finish gracefully
 
         logger.info("disconnecting clients");
@@ -126,15 +129,58 @@ public class Game extends Thread {
         });
     }
 
+    /**
+     * calculate damage for faster player attacking and reverse if necessary
+     *
+     * @param players the players in the game
+     */
     private void calculateAllDamage(ArrayList<Client> players) {
-        players.get(1).setCharacter(calculateDamage(players.get(0).getCharacter(), players.get(1).getCharacter()));
-        players.get(0).setCharacter(calculateDamage(players.get(1).getCharacter(), players.get(0).getCharacter()));
+
+        // determine first attacker
+        int faster = 0;
+        if (players.get(1).getCharacter().getWeapon().getRange() > players.get(0).getCharacter().getWeapon().getRange())
+            faster = 1;
+        int slower = (faster + 1) % 2;
+        Character damaged;
+
+        // iterate both attacks
+        for (int i = 0; i < 2; i++) {
+            // determine numbering for each round
+            faster = (faster + i) % 2;
+            slower = (slower + i) % 2;
+
+            // get roles
+            Character defender = players.get(slower).getCharacter();
+            Character attacker = players.get(faster).getCharacter();
+
+            // check for shield
+            int swapped = 0;
+            if (defender.getSpecial() != null && defender.getSpecial().getRarity() == 3) {
+                defender.destroySpecial();//destroy shield on use
+                defender = attacker;//reflect damage on attacker if defender has shield
+                swapped = 1;
+            }
+
+            // apply damage to player
+            damaged = calculateDamage(defender, attacker);
+            players.get((slower + swapped) % 2).setCharacter(damaged);
+
+            // skip second round if player died
+            if (damaged.getHp() <= 0) break;
+        }
     }
 
+    /**
+     * calculate the damage for one fight
+     *
+     * @param attacker the character to get offence properties from
+     * @param defender the character to get defence properties from
+     * @return the defender with adjusted hp value
+     */
     private Character calculateDamage(Character attacker, Character defender) {
-        ArrayList<Property> armorProperties = defender.getArmorProperties();
-        ArrayList<Property> attackProperties = attacker.getArmorProperties();
 
+        ArrayList<Property> armorProperties = collapseProperties(defender.getArmorProperties());
+        ArrayList<Property> attackProperties = collapseProperties(attacker.getDamageProperties());
         int damage;
         for (Property attack : attackProperties) {
             damage = attack.stat;
@@ -144,6 +190,34 @@ public class Game extends Thread {
             defender.lowerHP(damage);
         }
         return defender;
+    }
+
+    /**
+     * creates a list of unique properties with combined stats
+     *
+     * @param incoming the list of individual properties
+     * @return a unique list, with added stats for multiples of the same typ
+     */
+    private ArrayList<Property> collapseProperties(ArrayList<Property> incoming) {
+        ArrayList<Property> collapsed = new ArrayList<>();
+
+        boolean exists;
+        for (Property i : incoming
+        ) {
+            exists = false;
+            for (Property c : collapsed
+            ) {
+                if (c.typ == i.typ && c.element == i.element) {
+                    exists = true;
+                    c.stat += i.stat;
+                    break;
+                }
+            }
+            if (!exists) collapsed.add(i);
+        }
+
+
+        return collapsed;
     }
 
 

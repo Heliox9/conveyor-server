@@ -13,7 +13,6 @@ public class Item {
     private ArrayList<Property> properties;
     private ItemTyp itemTyp;
     private int range;
-
     /**
      * Fully random item generation
      */
@@ -21,29 +20,44 @@ public class Item {
         this(round, ItemTyp.random());
     }
 
+    public Item(int round, ItemTyp itemTyp) {
+        this(round, itemTyp, -42);
+    }
 
     /**
      * Typ based item generation
      *
      * @param itemTyp
      */
-    public Item(int round, ItemTyp itemTyp) {
+    public Item(int round, ItemTyp itemTyp, int rarity) {
         this.itemTyp = itemTyp;
         this.round = round;
-        try {
-            rarity = calculateRarityByRound();
-        } catch (InvalidAttributeValueException e) {
-            e.printStackTrace();
-        }
-
-        if (itemTyp == ItemTyp.WEAPON) {
-            range = (int) Math.round(Math.random() * 6);
+        if (rarity < 1) {
+            try {
+                rarity = calculateRarityByRound();
+            } catch (InvalidAttributeValueException e) {
+                e.printStackTrace();
+            }
         }
 
         properties = new ArrayList<>();
-        // TODO what happens for special of higher rarity
-        if (itemTyp == ItemTyp.SPECIAL && rarity == 1) properties.add(new Property()); // Set some property
+        if (itemTyp == ItemTyp.WEAPON) {
+            //0 range 1 only
+            //2 range 1,2 only
+            //other ranges all rarities
+            do {
+                range = (int) Math.round(Math.random() * 3) * 2;
+            } while ((range == 0 && rarity > 1) || (range == 2 && rarity == 3));
+        }
+        if (itemTyp == ItemTyp.SPECIAL && rarity == 1) properties.add(new Property(2)); // Set some property
+            // Rar1 potion: extra prop for 1 turn (rar 2 prop)
+            //  Rar2 Wand: 1 random item gets replaced with 1 tier higher / rerolled if slot empty or already rar3
+            // rar3 shield: reflects all dmg for 1 turn then breaks (attacker still blocks with his def items)
         else generateStandard(); // generate none special item
+    }
+
+    public int getRarity() {
+        return rarity;
     }
 
     public int getCost() {
@@ -88,7 +102,7 @@ public class Item {
         // add all other properties
         for (int i = 0; i < numProperties; i++) {
             // add fully random property
-            properties.add(new Property());
+            properties.add(new Property(rarity));
         }
     }
 

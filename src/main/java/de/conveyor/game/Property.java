@@ -15,13 +15,6 @@ public class Property {
     boolean typ;//false=>armor | true=> damage
     int stat;
 
-    /**
-     * generates a fully randomized property
-     */
-    public Property() {
-        //TODO should there be different chances for the rarities based on the item lvl?
-        this((int) Math.round(Math.random() * 2) + 1);
-    }
 
     /**
      * generates a randomized property within the rarity
