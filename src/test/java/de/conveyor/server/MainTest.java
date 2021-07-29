@@ -17,48 +17,49 @@ class MainTest {
 
     @Test
     public void givenClient1_whenServerResponds_thenCorrect() throws IOException {
-        Thread t = new Thread(() -> {
-            Socket client1 = null;
-            try {
-                client1 = new Socket("127.0.0.1", 88);
+        if (false) {// allows to disable second client
+            Thread t = new Thread(() -> {
+                Socket client1 = null;
+                try {
+                    client1 = new Socket("127.0.0.1", 88);
 
-                PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
-                out.println("Test 1");
-                in.readLine();// game id
-                in.readLine();// opponent
+                    PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
+                    out.println("Test 1");
+                    in.readLine();// game id
+                    in.readLine();// opponent
 
-                GameState state = null;
+                    GameState state = null;
 
-                do {// iterate rounds
-                    ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
+                    do {// iterate rounds
+                        ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
 
-                    // generate selection
-                    ArrayList<Item> bought = new ArrayList<Item>();
-                    bought.add(selection.getSelection().get(3));
-                    ArrayList<Item> saved = new ArrayList<Item>();
-                    saved.add(selection.getSelection().get(1));
-                    selection.setBought(bought);
-                    selection.setSaved(saved);
+                        // generate selection
+                        ArrayList<Item> bought = new ArrayList<Item>();
+                        bought.add(selection.getSelection().get(3));
+                        ArrayList<Item> saved = new ArrayList<Item>();
+                        saved.add(selection.getSelection().get(1));
+                        selection.setBought(bought);
+                        selection.setSaved(saved);
 
-                    out.println(gson.toJson(selection));
+                        out.println(gson.toJson(selection));
 
-                    // read fight stats
-                    state = gson.fromJson(in.readLine(), GameState.class);// read Gamestate
+                        // read fight stats
+                        state = gson.fromJson(in.readLine(), GameState.class);// read Gamestate
 
-                    // end of round
-                } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                client1.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        t.start();
-
+                        // end of round
+                    } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    client1.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            t.start();
+        }
 
         Socket client2 = null;
         try {

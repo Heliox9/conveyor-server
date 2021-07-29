@@ -7,6 +7,7 @@ import de.conveyor.server.ItemSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.directory.InvalidAttributeValueException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -78,6 +79,8 @@ public class Game extends Thread {
                 set.addAll(p.getCharacter().getSaved());
                 logger.trace("num items total: " + set.size());
                 p.getCharacter().wipeSaved();
+                logger.trace("set possible items for character: " + set);
+                p.getCharacter().setPossibleItems(set);
 
                 //send items to players
                 p.getThread().write(gson.toJson(new ItemSelection(set)));
@@ -91,11 +94,17 @@ public class Game extends Thread {
                     logger.debug("received selection: \n" + selection);
                     // apply items to characters
                     boolean canBuy = p.getCharacter().applyItems(selection.getBought());
-                    // TODO add possibility to decline buy
+                    if (!canBuy) {
+                        // TODO add possibility to decline buy
+                    }
                     p.getCharacter().setSaved(selection.getSaved());
                     logger.info("selection applied for player: \n" + selection + "\n" + p);
                 } catch (IOException e) {
                     logger.error("failed to send or receive from client", e);
+                    error = true;
+                    break;
+                } catch (InvalidAttributeValueException e) {
+                    logger.error("player" + p + " attempted to select invalid item", e);
                     error = true;
                     break;
                 }
