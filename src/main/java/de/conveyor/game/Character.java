@@ -233,4 +233,7 @@ public class Character {
     }
 
 
+    public int getMoney() {
+        return money;
+    }
 }

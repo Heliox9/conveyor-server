@@ -49,8 +49,14 @@ public class Game extends Thread {
                 p.setName(p.getThread().read());
                 logger.debug(p.getName());
 
+
                 // sending Game id
                 p.getThread().write("Game ID: " + id);
+
+                // sending initialzed character data
+//                p.getThread().write(gson.toJson(p.getCharacter()));
+
+
             } catch (IOException e) {
                 logger.error("failed to send or receive from client", e);
             }
@@ -69,6 +75,10 @@ public class Game extends Thread {
             logger.info("round: " + roundCounter);
 
             players.forEach((p) -> {
+                // sending character sheet
+//                logger.debug("sending character: " + p.getCharacter());
+//                p.getThread().write(gson.toJson(p.getCharacter()));
+
                 logger.info("generating items for player " + p);
                 //generate items
                 ArrayList<Item> set = new ArrayList<>();
@@ -85,6 +95,12 @@ public class Game extends Thread {
                 //send items to players
                 p.getThread().write(gson.toJson(new ItemSelection(set)));
                 logger.debug("sent items: " + set);
+
+                // sending current cash balance
+                p.getThread().write(gson.toJson(p.getCharacter().getMoney()));
+
+                // sending character sheet
+                p.getThread().write(gson.toJson(p.getCharacter()));
             });
 
             for (Client p : players) {

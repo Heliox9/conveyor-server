@@ -80,6 +80,14 @@ class MainTest {
                 System.out.println("received:");
                 System.out.println(selection);
 
+                System.out.println("cash:");
+                System.out.println(in.readLine());
+
+                System.out.println("character:");
+                System.out.println(in.readLine());
+
+
+
                 // generate selection
                 ArrayList<Item> bought = new ArrayList<Item>();
                 bought.add(selection.getSelection().get(4));
