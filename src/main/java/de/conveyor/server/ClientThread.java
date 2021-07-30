@@ -37,7 +37,7 @@ public class ClientThread extends Thread {
     }
 
     public void write(String msg) {
-        logger.trace("outgoing" + msg);
+        logger.trace("outgoing: " + msg);
         out.println(msg);
     }
 

@@ -2,6 +2,7 @@ package de.conveyor.game;
 
 import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Model for a single item. Needs to match generation and types of app-implementation
@@ -13,6 +14,7 @@ public class Item {
     private final ItemTyp itemTyp;
     private int cost;
     private int range;
+    private final UUID uuid;
 
     /**
      * Fully random item generation
@@ -31,6 +33,7 @@ public class Item {
      * @param itemTyp the itemTyp to generate
      */
     public Item(int round, ItemTyp itemTyp, int rarity) {
+        uuid = UUID.randomUUID();//uniquely mark the item for later lookup
         this.itemTyp = itemTyp;
         this.round = round;
         if (rarity < 1) {
@@ -56,6 +59,16 @@ public class Item {
             // Rar2 wand    : 1 random item gets replaced with 1 tier higher / rerolled if slot empty or already rar3
             // Rar3 shield  : reflects all dmg for 1 turn then breaks (attacker still blocks with his def items)
         else generateStandard(); // generate none special item
+    }
+
+    private Item(int round, int rarity, ArrayList<Property> properties, ItemTyp itemTyp, int cost, int range, UUID uuid) {
+        this.round = round;
+        this.rarity = rarity;
+        this.properties = properties;
+        this.itemTyp = itemTyp;
+        this.cost = cost;
+        this.range = range;
+        this.uuid = uuid;
     }
 
     public int getRarity() {
@@ -156,14 +169,24 @@ public class Item {
         return 3;
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
     @Override
     public String toString() {
         return "Item{" +
-                "rarity=" + rarity +
+                "uuid=" + uuid +
+                ", rarity=" + rarity +
                 ", itemTyp=" + itemTyp +
                 ", cost=" + cost +
                 ", range=" + range +
                 ", properties=" + properties +
                 '}';
+    }
+
+    @Override
+    protected Item clone() {
+        return new Item(round, rarity, properties, itemTyp, cost, range, uuid);
     }
 }

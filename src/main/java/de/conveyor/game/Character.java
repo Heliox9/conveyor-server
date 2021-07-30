@@ -1,8 +1,13 @@
 package de.conveyor.game;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.naming.directory.InvalidAttributeValueException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Data modeled after app-implementation
@@ -24,7 +29,7 @@ public class Character {
         hp = 100;
         wipeSaved();
         viewable = new ArrayList<>();
-        money = 10;//TODO change to actual value
+        money = 5;
     }
 
     public void addMoney(int plus) {
@@ -40,25 +45,55 @@ public class Character {
         return saved;
     }
 
-    public void setSaved(ArrayList<Item> saved) {
-        this.saved = saved;
+    public void setSaved(ArrayList<Item> newSaved) throws InvalidAttributeValueException {
+        saved = new ArrayList<>();
+        for (Item i : newSaved
+        ) {
+            saved.add(findPossibleItem(i.getUuid()));
+        }
     }
 
     public void wipeSaved() {
         saved = new ArrayList<>();
     }
 
-    public boolean applyItems(List<Item> items) {
-        int cost = 0;
+    private List<Item> findPossibleItems(List<Item> items) throws InvalidAttributeValueException {
+        List<Item> possibles = new ArrayList<>();
         for (Item i : items) {
+            possibles.add(findPossibleItem(i.getUuid()));
+        }
+        return possibles;
+    }
+
+    public boolean applyItems(List<Item> items) throws InvalidAttributeValueException {
+        List<Item> possible = findPossibleItems(items);
+        int cost = 0;
+        logger.trace("calculating total cost for: " + possible);
+        for (Item i : possible) {
             cost += i.getCost();
         }
-        if (cost < money) {
-            for (Item i : items) {
+
+        if (cost <= money) {
+            logger.trace("applying bought items");
+            for (Item i : possible) {
                 applyItem(i);
             }
+            logger.trace("adjusting money balance");
+            money -= cost;
             return true;
         } else return false;
+    }
+
+    private static Logger logger = LoggerFactory.getLogger(Character.class);
+
+    private Item findPossibleItem(UUID uuid) throws InvalidAttributeValueException {
+
+        for (Item i : possibleItems
+        ) {
+            logger.trace("uuid: " + uuid + "|" + i.getUuid() + " item");
+            if (i.getUuid().equals(uuid)) return i;
+        }
+        throw new InvalidAttributeValueException("Items uuid does not match any possible item: " + uuid);
     }
 
     public void lowerHP(int change) {
@@ -124,7 +159,18 @@ public class Character {
         applyItem(newItem);
     }
 
+    private ArrayList<Item> possibleItems;
+
+    public void setPossibleItems(ArrayList<Item> items) {
+        this.possibleItems = new ArrayList<>();
+        for (Item i : items
+        ) {
+            possibleItems.add(i.clone());
+        }
+    }
+
     public void applyItem(Item item) {
+        logger.trace("item to apply: " + item);
         switch (item.getItemTyp()) {
             case SPECIAL:
                 if (item.getRarity() == 2) upgradeItem();
@@ -196,8 +242,12 @@ public class Character {
                 ", special=" + special +
                 ", weapon=" + weapon +
                 ", saved=" + saved +
+                ",\n possible items=" + possibleItems +
                 '}';
     }
 
 
+    public int getMoney() {
+        return money;
+    }
 }

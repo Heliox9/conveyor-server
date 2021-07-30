@@ -17,47 +17,70 @@ class MainTest {
 
     @Test
     public void givenClient1_whenServerResponds_thenCorrect() throws IOException {
-        Thread t = new Thread(() -> {
-            Socket client1 = null;
-            try {
-                client1 = new Socket("127.0.0.1", 88);
+        if (false) { // allows to disable second client
+            Thread t = new Thread(() -> {
+                Socket client1 = null;
+                try {
+                    client1 = new Socket("127.0.0.1", 88);
 
-                PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
-                out.println("Test 1");
-                in.readLine();// game id
-                in.readLine();// opponent
+                    PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
+                    out.println("Test 1");
+                    System.out.println(in.readLine());// game id
+                    System.out.println(in.readLine());// opponent
 
-                GameState state = null;
+                    GameState state = null;
+                    Boolean first = null;
 
-                do {// iterate rounds
-                    ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
+                    do {// iterate rounds
+                        ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
+                        System.out.println("received:");
+                        System.out.println(selection);
 
-                    // generate selection
-                    ArrayList<Item> bought = new ArrayList<Item>();
-                    bought.add(selection.getSelection().get(3));
-                    ArrayList<Item> saved = new ArrayList<Item>();
-                    saved.add(selection.getSelection().get(1));
-                    selection.setBought(bought);
-                    selection.setSaved(saved);
+                        System.out.println("cash:");
+                        System.out.println(in.readLine());
 
-                    out.println(gson.toJson(selection));
+                        System.out.println("character:");
+                        System.out.println(in.readLine());
 
-                    // read fight stats
-                    state = gson.fromJson(in.readLine(), GameState.class);// read Gamestate
 
-                    // end of round
-                } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                client1.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        t.start();
+                        // generate selection
+                        ArrayList<Item> bought = new ArrayList<Item>();
+                        bought.add(selection.getSelection().get(4));
+                        ArrayList<Item> saved = new ArrayList<Item>();
+                        saved.add(selection.getSelection().get(1));
+                        selection.setBought(bought);
+                        selection.setSaved(saved);
+
+                        out.println(gson.toJson(selection));
+                        System.out.println("sent:");
+                        System.out.println(selection);
+
+                        // read fight stats
+                        state = gson.fromJson(in.readLine(), GameState.class);// read game state
+                        System.out.println("received:");
+                        System.out.println(state);
+                        //after damage
+                        state = gson.fromJson(in.readLine(), GameState.class);// read game state
+                        System.out.println("received:");
+                        System.out.println(state);
+
+                        first = gson.fromJson(in.readLine(), Boolean.class);// read game state
+                        System.out.println("received:" + first);
+
+                        // end of round
+                    } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    client1.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            t.start();
+        }
 
 
         Socket client2 = null;
@@ -73,11 +96,19 @@ class MainTest {
             System.out.println(in.readLine());// opponent
 
             GameState state = null;
+            Boolean first = null;
 
             do {// iterate rounds
                 ItemSelection selection = gson.fromJson(in.readLine(), ItemSelection.class);// set
                 System.out.println("received:");
                 System.out.println(selection);
+
+                System.out.println("cash:");
+                System.out.println(in.readLine());
+
+                System.out.println("character:");
+                System.out.println(in.readLine());
+
 
                 // generate selection
                 ArrayList<Item> bought = new ArrayList<Item>();
@@ -92,9 +123,16 @@ class MainTest {
                 System.out.println(selection);
 
                 // read fight stats
-                state = gson.fromJson(in.readLine(), GameState.class);// read Gamestate
+                state = gson.fromJson(in.readLine(), GameState.class);// read game state
                 System.out.println("received:");
                 System.out.println(state);
+                //after damage
+                state = gson.fromJson(in.readLine(), GameState.class);// read game state
+                System.out.println("received:");
+                System.out.println(state);
+
+                first = gson.fromJson(in.readLine(), Boolean.class);// read game state
+                System.out.println("received:" + first);
 
                 // end of round
             } while (state.getPlayer().getHp() > 0 && state.getOpponent().getHp() > 0);

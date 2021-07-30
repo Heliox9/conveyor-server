@@ -7,6 +7,7 @@ import de.conveyor.server.ItemSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.directory.InvalidAttributeValueException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -48,8 +49,14 @@ public class Game extends Thread {
                 p.setName(p.getThread().read());
                 logger.debug(p.getName());
 
+
                 // sending Game id
                 p.getThread().write("Game ID: " + id);
+
+                // sending initialzed character data
+//                p.getThread().write(gson.toJson(p.getCharacter()));
+
+
             } catch (IOException e) {
                 logger.error("failed to send or receive from client", e);
             }
@@ -68,6 +75,10 @@ public class Game extends Thread {
             logger.info("round: " + roundCounter);
 
             players.forEach((p) -> {
+                // sending character sheet
+//                logger.debug("sending character: " + p.getCharacter());
+//                p.getThread().write(gson.toJson(p.getCharacter()));
+
                 logger.info("generating items for player " + p);
                 //generate items
                 ArrayList<Item> set = new ArrayList<>();
@@ -78,10 +89,18 @@ public class Game extends Thread {
                 set.addAll(p.getCharacter().getSaved());
                 logger.trace("num items total: " + set.size());
                 p.getCharacter().wipeSaved();
+                logger.trace("set possible items for character: " + set);
+                p.getCharacter().setPossibleItems(set);
 
                 //send items to players
                 p.getThread().write(gson.toJson(new ItemSelection(set)));
                 logger.debug("sent items: " + set);
+
+                // sending current cash balance
+                p.getThread().write(gson.toJson(p.getCharacter().getMoney()));
+
+                // sending character sheet
+                p.getThread().write(gson.toJson(p.getCharacter()));
             });
 
             for (Client p : players) {
@@ -91,36 +110,48 @@ public class Game extends Thread {
                     logger.debug("received selection: \n" + selection);
                     // apply items to characters
                     boolean canBuy = p.getCharacter().applyItems(selection.getBought());
-                    // TODO add possibility to decline buy
+                    if (!canBuy) {
+                        logger.warn("Player cant afford selection: " + p.getCharacter());
+                        // TODO add possibility to decline buy
+                    }
                     p.getCharacter().setSaved(selection.getSaved());
                     logger.info("selection applied for player: \n" + selection + "\n" + p);
                 } catch (IOException e) {
                     logger.error("failed to send or receive from client", e);
                     error = true;
                     break;
+                } catch (InvalidAttributeValueException e) {
+                    logger.error("player" + p + " attempted to select invalid item", e);
+                    error = true;
+                    break;
                 }
-
-
             }
+
+            //send stats
+            sendGamestateToPlayers();
+
             // calculate fight
             logger.info("calculating damage");
             calculateAllDamage(players);
-            // send fight stats
+
+            //send stats
+            sendGamestateToPlayers();
+
+            // tell players if they are first
+            int first = findFaster();
+            for (int i = 0; i < 2; i++) {
+                players.get(i).getThread().write(gson.toJson((Boolean) (i == first)));
+            }
+
+            //finish round
             players.forEach(player -> {
-                        GameState state = new GameState(roundCounter, player.getCharacter(), players.get((players.indexOf(player) + 1) % 2).getCharacter());
-                        player.getThread().write(gson.toJson(state));
-                        logger.debug("sent state: " + state);
-                        // destroy special items
-                        logger.debug("destroying special: " + player.getCharacter().getSpecial());
-                        player.getCharacter().destroySpecial();
+                // destroy special items
+                logger.debug("destroying special: " + player.getCharacter().getSpecial());
+                player.getCharacter().destroySpecial();
 
-                        logger.debug("adding cash to player: " + player);
-                        player.getCharacter().addMoney(3);
-                    }
-
-            );
-
-
+                logger.debug("adding cash to player: " + player);
+                player.getCharacter().addMoney(5 + ((roundCounter - 1) * 3));
+            });
             //iterate round
             logger.info("round finished: " + roundCounter);
             roundCounter++;
@@ -140,6 +171,24 @@ public class Game extends Thread {
         });
     }
 
+    private void sendGamestateToPlayers() {
+        GameState gameState;
+        // send fight stats
+        for (int i = 0; i < 2; i++) {
+            gameState = new GameState(roundCounter, players.get(i).getCharacter(), players.get((i + 1) % 2).getCharacter());
+            players.get(i).getThread().write(gson.toJson(gameState));
+            logger.debug("sent  state: " + gameState);
+        }
+    }
+
+    private int findFaster() {
+        // determine first attacker
+        int faster = 0;
+        if (players.get(1).getCharacter().getRange() > players.get(0).getCharacter().getRange())
+            faster = 1;
+        return faster;
+    }
+
     /**
      * calculate damage for faster player attacking and reverse if necessary
      *
@@ -147,10 +196,7 @@ public class Game extends Thread {
      */
     private void calculateAllDamage(ArrayList<Client> players) {
 
-        // determine first attacker
-        int faster = 0;
-        if (players.get(1).getCharacter().getRange() > players.get(0).getCharacter().getRange())
-            faster = 1;
+        int faster = findFaster();
         int slower = (faster + 1) % 2;
         Character damaged;
 
