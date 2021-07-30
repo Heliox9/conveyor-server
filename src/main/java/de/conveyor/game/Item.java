@@ -45,6 +45,14 @@ public class Item {
         }
         this.rarity = rarity;
 
+        //set cost based on rarity
+        cost = switch (rarity) {
+            case 1 -> 5;
+            case 2 -> 15;
+            case 3 -> 25;
+            default -> throw new IllegalStateException("Unexpected value: " + rarity);
+        };
+
         properties = new ArrayList<>();
         if (itemTyp == ItemTyp.WEAPON) {
             //0 range 1 only
@@ -54,10 +62,12 @@ public class Item {
                 range = (int) Math.round(Math.random() * 3) * 2;
             } while ((range == 0 && rarity > 1) || (range == 2 && rarity == 3));
         }
-        if (itemTyp == ItemTyp.SPECIAL && rarity == 1) properties.add(new Property(2)); // Set some property
-            // Rar1 potion  : extra prop for 1 turn (rar 2 prop)
-            // Rar2 wand    : 1 random item gets replaced with 1 tier higher / rerolled if slot empty or already rar3
-            // Rar3 shield  : reflects all dmg for 1 turn then breaks (attacker still blocks with his def items)
+        if (itemTyp == ItemTyp.SPECIAL && rarity == 1) {
+            properties.add(new Property(2));
+        } // Set some property
+        // Rar1 potion  : extra prop for 1 turn (rar 2 prop)
+        // Rar2 wand    : 1 random item gets replaced with 1 tier higher / rerolled if slot empty or already rar3
+        // Rar3 shield  : reflects all dmg for 1 turn then breaks (attacker still blocks with his def items)
         else generateStandard(); // generate none special item
     }
 
@@ -93,15 +103,7 @@ public class Item {
 
     private void generateStandard() {
         // calculate number of properties
-        int numProperties = (int) Math.round(Math.random() * 2) + (rarity == 1 ? 1 : 3);//generate num between 1-4
-
-        //set cost based on rarity
-        cost = switch (rarity) {
-            case 1 -> 5;
-            case 2 -> 15;
-            case 3 -> 25;
-            default -> throw new IllegalStateException("Unexpected value: " + rarity);
-        };
+        int numProperties = (int) Math.round(Math.random()) + (rarity == 1 ? 1 : 3);//generate num between 1-4
 
         if (rarity == 3) {
             // generate flash property
@@ -110,10 +112,20 @@ public class Item {
         }
 
         // add all other properties
-        for (int i = 0; i < numProperties; i++) {
+        Property newProp;
+        while (properties.size() < numProperties) {
+            newProp = new Property(rarity);
             // add fully random property
-            properties.add(new Property(rarity));
+            if (!checkPropertyExists(newProp)) properties.add(newProp);
         }
+    }
+
+    private boolean checkPropertyExists(Property check) {
+        for (Property p : properties
+        ) {
+            if (p.typ == check.typ && p.element == check.element) return true;
+        }
+        return false;
     }
 
     private int calculateRarityByRound() throws InvalidAttributeValueException {
