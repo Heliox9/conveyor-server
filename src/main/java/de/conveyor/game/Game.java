@@ -124,28 +124,33 @@ public class Game extends Thread {
                     error = true;
                     break;
                 }
-
-
             }
+
+            //send stats
+            sendGamestateToPlayers();
+
             // calculate fight
             logger.info("calculating damage");
             calculateAllDamage(players);
-            // send fight stats
+
+            //send stats
+            sendGamestateToPlayers();
+
+            // tell players if they are first
+            int first = findFaster();
+            for (int i = 0; i < 2; i++) {
+                players.get(i).getThread().write(gson.toJson((Boolean) (i == first)));
+            }
+
+            //finish round
             players.forEach(player -> {
-                        GameState state = new GameState(roundCounter, player.getCharacter(), players.get((players.indexOf(player) + 1) % 2).getCharacter());
-                        player.getThread().write(gson.toJson(state));
-                        logger.debug("sent state: " + state);
-                        // destroy special items
-                        logger.debug("destroying special: " + player.getCharacter().getSpecial());
-                        player.getCharacter().destroySpecial();
+                // destroy special items
+                logger.debug("destroying special: " + player.getCharacter().getSpecial());
+                player.getCharacter().destroySpecial();
 
-                        logger.debug("adding cash to player: " + player);
-                        player.getCharacter().addMoney(3);
-                    }
-
-            );
-
-
+                logger.debug("adding cash to player: " + player);
+                player.getCharacter().addMoney(3);
+            });
             //iterate round
             logger.info("round finished: " + roundCounter);
             roundCounter++;
@@ -165,6 +170,24 @@ public class Game extends Thread {
         });
     }
 
+    private void sendGamestateToPlayers() {
+        GameState gameState;
+        // send fight stats
+        for (int i = 0; i < 2; i++) {
+            gameState = new GameState(roundCounter, players.get(i).getCharacter(), players.get((i + 1) % 2).getCharacter());
+            players.get(i).getThread().write(gson.toJson(gameState));
+            logger.debug("sent  state: " + gameState);
+        }
+    }
+
+    private int findFaster() {
+        // determine first attacker
+        int faster = 0;
+        if (players.get(1).getCharacter().getRange() > players.get(0).getCharacter().getRange())
+            faster = 1;
+        return faster;
+    }
+
     /**
      * calculate damage for faster player attacking and reverse if necessary
      *
@@ -172,10 +195,7 @@ public class Game extends Thread {
      */
     private void calculateAllDamage(ArrayList<Client> players) {
 
-        // determine first attacker
-        int faster = 0;
-        if (players.get(1).getCharacter().getRange() > players.get(0).getCharacter().getRange())
-            faster = 1;
+        int faster = findFaster();
         int slower = (faster + 1) % 2;
         Character damaged;
 
