@@ -4,17 +4,22 @@ import de.conveyor.game.Game;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
 
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     static ServerSocket serverSocket;
-//    static ArrayList<Game> games;// TODO not sure if games need to be kept in this way
+    static Properties props = new Properties();
+    static File propsFile = new File("src/main/resources/config.properties");
 
     public static void main(String[] args) throws IOException {
+        props.load(new FileReader(propsFile));
         // create wrapper objects
 //        games = new ArrayList<>();
         Socket client;
@@ -22,7 +27,7 @@ public class Main {
 
         // create server socket
         logger.info("Server creating");
-        serverSocket = new ServerSocket(88);// TODO change/ make configurable
+        serverSocket = new ServerSocket(Integer.parseInt(props.getProperty("port")));
 
         boolean up;
         // keep server up

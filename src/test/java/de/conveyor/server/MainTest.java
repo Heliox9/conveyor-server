@@ -5,10 +5,7 @@ import de.conveyor.game.GameState;
 import de.conveyor.game.Item;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -17,11 +14,12 @@ class MainTest {
 
     @Test
     public void givenClient1_whenServerResponds_thenCorrect() throws IOException {
+        Main.props.load(new FileReader(Main.propsFile));
         if (false) { // allows to disable second client
             Thread t = new Thread(() -> {
                 Socket client1 = null;
                 try {
-                    client1 = new Socket("127.0.0.1", 88);
+                    client1 = new Socket("127.0.0.1", Integer.parseInt(Main.props.getProperty("port")));
 
                     PrintWriter out = new PrintWriter(client1.getOutputStream(), true);
                     BufferedReader in = new BufferedReader(new InputStreamReader(client1.getInputStream()));
@@ -85,7 +83,7 @@ class MainTest {
 
         Socket client2 = null;
         try {
-            client2 = new Socket("127.0.0.1", 88);
+            client2 = new Socket("127.0.0.1", Integer.parseInt(Main.props.getProperty("port")));
 
             PrintWriter out = new PrintWriter(client2.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client2.getInputStream()));
