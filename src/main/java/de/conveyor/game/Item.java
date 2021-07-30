@@ -4,6 +4,10 @@ import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+//TODO shield damage calucaltion not working
+// TODO wand shouldnt have properties
+
+
 /**
  * Model for a single item. Needs to match generation and types of app-implementation
  */
@@ -62,8 +66,8 @@ public class Item {
                 range = (int) Math.round(Math.random() * 3) * 2;
             } while ((range == 0 && rarity > 1) || (range == 2 && rarity == 3));
         }
-        if (itemTyp == ItemTyp.SPECIAL && rarity == 1) {
-            properties.add(new Property(2));
+        if (itemTyp == ItemTyp.SPECIAL) {
+            if (rarity == 1) properties.add(new Property(2));
         } // Set some property
         // Rar1 potion  : extra prop for 1 turn (rar 2 prop)
         // Rar2 wand    : 1 random item gets replaced with 1 tier higher / rerolled if slot empty or already rar3
