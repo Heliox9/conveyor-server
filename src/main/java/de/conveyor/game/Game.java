@@ -111,6 +111,7 @@ public class Game extends Thread {
                     // apply items to characters
                     boolean canBuy = p.getCharacter().applyItems(selection.getBought());
                     if (!canBuy) {
+                        logger.warn("Player cant afford selection: " + p.getCharacter());
                         // TODO add possibility to decline buy
                     }
                     p.getCharacter().setSaved(selection.getSaved());
@@ -149,7 +150,7 @@ public class Game extends Thread {
                 player.getCharacter().destroySpecial();
 
                 logger.debug("adding cash to player: " + player);
-                player.getCharacter().addMoney(3);
+                player.getCharacter().addMoney(5 + ((roundCounter - 1) * 3));
             });
             //iterate round
             logger.info("round finished: " + roundCounter);

@@ -29,7 +29,7 @@ public class Character {
         hp = 100;
         wipeSaved();
         viewable = new ArrayList<>();
-        money = 10;//TODO change to actual value
+        money = 5;
     }
 
     public void addMoney(int plus) {
@@ -57,15 +57,29 @@ public class Character {
         saved = new ArrayList<>();
     }
 
-    public boolean applyItems(List<Item> items) throws InvalidAttributeValueException {
-        int cost = 0;
+    private List<Item> findPossibleItems(List<Item> items) throws InvalidAttributeValueException {
+        List<Item> possibles = new ArrayList<>();
         for (Item i : items) {
+            possibles.add(findPossibleItem(i.getUuid()));
+        }
+        return possibles;
+    }
+
+    public boolean applyItems(List<Item> items) throws InvalidAttributeValueException {
+        List<Item> possible = findPossibleItems(items);
+        int cost = 0;
+        logger.trace("calculating total cost for: " + possible);
+        for (Item i : possible) {
             cost += i.getCost();
         }
-        if (cost < money) {
-            for (Item i : items) {
-                applyItem(findPossibleItem(i.getUuid()));
+
+        if (cost <= money) {
+            logger.trace("applying bought items");
+            for (Item i : possible) {
+                applyItem(i);
             }
+            logger.trace("adjusting money balance");
+            money -= cost;
             return true;
         } else return false;
     }
@@ -228,7 +242,7 @@ public class Character {
                 ", special=" + special +
                 ", weapon=" + weapon +
                 ", saved=" + saved +
-                ", possible items=" + possibleItems +
+                ",\n possible items=" + possibleItems +
                 '}';
     }
 
