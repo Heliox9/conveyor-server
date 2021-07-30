@@ -4,9 +4,6 @@ import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-//TODO shield damage calucaltion not working
-// TODO wand shouldnt have properties
-
 
 /**
  * Model for a single item. Needs to match generation and types of app-implementation

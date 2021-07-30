@@ -112,7 +112,6 @@ public class Game extends Thread {
                     boolean canBuy = p.getCharacter().applyItems(selection.getBought());
                     if (!canBuy) {
                         logger.warn("Player cant afford selection: " + p.getCharacter());
-                        // TODO add possibility to decline buy
                     }
                     p.getCharacter().setSaved(selection.getSaved());
                     logger.info("selection applied for player: \n" + selection + "\n" + p);
@@ -198,7 +197,7 @@ public class Game extends Thread {
 
         int faster = findFaster();
         int slower = (faster + 1) % 2;
-        Character damaged;
+        int damaged;
 
         // iterate both attacks
         for (int i = 0; i < 2; i++) {
@@ -218,11 +217,11 @@ public class Game extends Thread {
                 damaged = calculateDamage(attacker, attacker);
             } else {
                 // apply damage to player normally
-                damaged = calculateDamage(defender, attacker);
+                damaged = calculateDamage(attacker, defender);
             }
 
             // skip second round if player died
-            if (damaged.getHp() <= 0) {
+            if (damaged <= 0) {
                 logger.info("skipping second attack because player died");
                 break;
             }
@@ -236,7 +235,7 @@ public class Game extends Thread {
      * @param defender the character to get defence properties from
      * @return the defender with adjusted hp value
      */
-    private Character calculateDamage(Character attacker, Character defender) {
+    private int calculateDamage(Character attacker, Character defender) {
 
         ArrayList<Property> armorProperties = collapseProperties(defender.getArmorProperties());
         ArrayList<Property> attackProperties = collapseProperties(attacker.getDamageProperties());
@@ -248,7 +247,7 @@ public class Game extends Thread {
             }
             defender.lowerHP(damage);
         }
-        return defender;
+        return defender.getHp();
     }
 
     /**

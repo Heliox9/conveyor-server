@@ -12,7 +12,6 @@ import java.net.Socket;
 
 public class ClientThread extends Thread {
 
-    // TODO check message flow. logs from this class get written from the game thread...
 
     private final Logger logger;
     Socket client;
