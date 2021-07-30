@@ -214,15 +214,12 @@ public class Game extends Thread {
             Character attacker = players.get(faster).getCharacter();
 
             // check for shield
-            int swapped = 0;
             if (defender.getSpecial() != null && defender.getSpecial().getRarity() == 3) {
-                defender.destroySpecial();//destroy shield on use
-                defender = attacker;//reflect damage on attacker if defender has shield
-                swapped = 1;
+                damaged = calculateDamage(attacker, attacker);
+            } else {
+                // apply damage to player normally
+                damaged = calculateDamage(defender, attacker);
             }
-
-            // apply damage to player
-            damaged = calculateDamage(defender, attacker);
 
             // skip second round if player died
             if (damaged.getHp() <= 0) {

@@ -150,13 +150,17 @@ public class Character {
     }
 
     private void upgradeItem() {
-        Item selected;
-        do {
-            selected = getAllItems().get((int) Math.round(Math.random() * (getAllItems().size() - 1)));
-        } while (selected.getRarity() == 3);
+        try {
+            Item selected;
+            do {
+                selected = getAllItems().get((int) Math.round(Math.random() * (getAllItems().size() - 1)));
+            } while (selected.getRarity() == 3);
 
-        Item newItem = new Item(0, selected.getItemTyp(), selected.getRarity() + 1);
-        applyItem(newItem);
+            Item newItem = new Item(0, selected.getItemTyp(), selected.getRarity() + 1);
+            applyItem(newItem);
+        } catch (Exception e) {
+            logger.warn("Wand couldn't upgrade any items");
+        }
     }
 
     private ArrayList<Item> possibleItems;
